@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  produtos: MyString
+  valortotal: 1
+  usuario: one
+
+two:
+  produtos: MyString
+  valortotal: 1
+  usuario: two
