@@ -2,12 +2,16 @@ class ComandasController < ApplicationController
 
 	def index
 		comandas = Comanda.order('created_at DESC');
-		render json: comandas,status: :ok
+		response = []
+		comandas.each do |comanda|
+			response.push(reverse(comanda))
+		end
+		render json: response,status: :ok
 	end
 
 	def show
 		comanda = Comanda.find(params[:id])
-		render json: comanda,status: :ok
+		render json: reverse(comanda),status: :ok
 	end
 			
 	def create
@@ -15,7 +19,7 @@ class ComandasController < ApplicationController
 	#end
 		comanda = Comanda.new(convert(comanda_params))
 		if comanda.save
-			render json: comanda,status: :ok
+			render json: reverse(comanda),status: :ok
 		else
 			render json: {status: 'ERROR', message:'comandas not saved', data:comanda.erros},status: :unprocessable_entity
 		end
@@ -29,11 +33,16 @@ class ComandasController < ApplicationController
 
 	def update
 		comanda = Comanda.find(params[:id])
-		if comanda.update_attributes(comanda_params)
-			render json: comanda,status: :ok
+		if comanda.update_attributes(convert(comanda_params))
+			render json: reverse(comanda),status: :ok
 		else
 			render json: {status: 'ERROR', message:'comandas not update', data:comanda.erros},status: :unprocessable_entity
 		end
+	end
+
+	private
+	def reverse(comanda)
+		return {produtos: comanda.produtos, valortotal: comanda.valortotal, id: comanda.id, idusuario: comanda.usuario_id}
 	end
 		
 	private 

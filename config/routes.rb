@@ -4,4 +4,6 @@ Rails.application.routes.draw do
   resources :usuarios
   resources :comandas
 
+  delete '/usuarios', to: 'usuarios#deleteByEmail'
+
 end

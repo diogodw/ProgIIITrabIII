@@ -24,6 +24,18 @@ class UsuariosController < ApplicationController
 		usuario.destroy
 		render json: {success:{text:"usuário removido"}},status: :ok
 	end
+
+	def deleteByEmail
+		begin
+			usuario = Usuario.where(:email => usuario_params['email'])
+			if usuario != nil then
+				usuario.first.destroy
+			end
+			render json: {success:{text:"usuário removido"}},status: :ok
+		rescue ActiveRecord::InvalidForeignKey
+			render json: {success:{text:"usuário contem comandas, impossivel de excluir"}},status: :ok
+		end
+	end
 			
 	def update
 		usuario = Usuario.find(params[:id])
