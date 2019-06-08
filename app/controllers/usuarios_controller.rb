@@ -1,5 +1,7 @@
 class UsuariosController < ApplicationController
 
+	skip_before_action :authenticate_request
+
 	def index
 		usuarios = Usuario.order('created_at DESC');
 		render json: usuarios,status: :ok
