@@ -1,30 +1,38 @@
 class UsuariosController < ApplicationController
 
-	skip_before_action :authenticate_request
-
+	skip_before_action :authenticate_request, only: [:create], raise: false
+	
 	def index
 		usuarios = Usuario.order('created_at DESC');
-		render json: usuarios,status: :ok
+		response = []
+		usuarios.each do |usuario|
+			response.push(reverse(usuario))
+		end
+		render json: response,status: :ok
 	end
 
 	def show
 		usuario = Usuario.find(params[:id])
-		render json: usuario,status: :ok
+		render json: reverse(usuario),status: :ok
 	end
 			
 	def create
-		usuario = Usuario.new(usuario_params)
+		usuario = Usuario.new(convert(usuario_params))
 		if usuario.save
-			render json: usuario,status: :ok
+			render json: reverse(usuario),status: :ok
 		else
-			render json: {status: 'ERROR', message:'usuarios not saved', data:usuario.erros},status: :unprocessable_entity
+			render json: {status: 'ERROR', message:'Dados incorretos', data:usuario},status: 400
 		end
 	end
 			
 	def destroy
-		usuario = Usuario.find(params[:id])
-		usuario.destroy
-		render json: {success:{text:"usuário removido"}},status: :ok
+		begin
+			usuario = Usuario.find(params[:id])
+			usuario.destroy
+			render json: {success:{text:"usuário removido"}},status: :ok
+		rescue ActiveRecord::InvalidForeignKey
+			render json: {success:{text:"usuário contem comandas, impossivel de excluir"}},status: :ok
+		end
 	end
 
 	def deleteByEmail
@@ -44,10 +52,24 @@ class UsuariosController < ApplicationController
 		if usuario.update_attributes(usuario_params)
 			render json: {email:usuario.email, senha:usuario.senha},status: :ok
 		else
-			render json: {status: 'ERROR', message:'usuarios not update', data:usuario.erros},status: :unprocessable_entity
+			render json: {status: 'ERROR', message:'Dados incorretos', data:usuario.erros},status: 400
 		end
 	end
 		
+	private
+	def reverse(usuario)
+		return {email: usuario.email, senha: usuario.senha, id: usuario.id}
+	end
+		
+	private 
+	def convert(params)
+		response = Hash.new
+		response['email'] = params['email']
+		response['senha'] = params['senha']
+		response['password'] = params['senha']
+		return response
+	end
+
 	private
 	def usuario_params
 		params.permit(:email, :senha)
