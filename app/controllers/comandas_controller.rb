@@ -21,7 +21,7 @@ class ComandasController < ApplicationController
 		if comanda.save
 			render json: reverse(comanda),status: :ok
 		else
-			render json: {status: 'ERROR', message:'comandas not saved', data:comanda.erros},status: :unprocessable_entity
+			render json: {status: 'ERROR', message:'Dados incorretos', data:comanda.erros},status: 400
 		end
 	end
 			
@@ -36,7 +36,7 @@ class ComandasController < ApplicationController
 		if comanda.update_attributes(convert(comanda_params))
 			render json: reverse(comanda),status: :ok
 		else
-			render json: {status: 'ERROR', message:'comandas not update', data:comanda.erros},status: :unprocessable_entity
+			render json: {status: 'ERROR', message:'Dados incorretos', data:comanda.erros},status: 400
 		end
 	end
 

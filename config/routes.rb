@@ -5,5 +5,6 @@ Rails.application.routes.draw do
   resources :comandas
 
   delete '/usuarios', to: 'usuarios#deleteByEmail'
+  post 'authenticate', to: 'authentication#authenticate'
 
 end
